@@ -26,19 +26,33 @@ export const sendEmail = async ({ email, emailType, userId }: EmailProps) => {
             secure: false,
             auth: {
                 user: process.env.SMTP_USER,
-                pass: process.env.SMTP_PASS, 
+                pass: process.env.SMTP_PASS,
             },
         });
 
-        const emailData={
+        const url =
+            emailType === "VERIFY"
+                ? `${process.env.DOMAIN}/verifyemail?token=${verifyToken}`
+                : `${process.env.DOMAIN}/reset-password?token=${verifyToken}`;
+
+        const emailData = {
             from: process.env.EMAIL,
             to: email,
-            subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password", 
-            html: `<p>Click <a href="${process.env.DOMAIN}/verifyemail?token=${verifyToken}">here</a>
-             to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}
-            or copy and paste the link below in your browser. <br> ${process.env.DOMAIN}/verifyemail?token=${emailType}
-            </p>`
-        }
+            subject: emailType === "VERIFY" ? "Verify your email" : "Reset your password",
+            html: `
+                <p>
+                Click
+                <a href="${url}">
+                here
+                </a>
+                to ${emailType === "VERIFY" ? "verify your email" : "reset your password"}.
+
+                <br/><br/>
+
+                ${url}
+                </p>
+                `
+            }
 
         const response = await transporter.sendMail(emailData);
 
