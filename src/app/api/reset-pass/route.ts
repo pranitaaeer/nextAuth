@@ -18,6 +18,6 @@ export async function POST(request:NextRequest){
 
         return NextResponse.json({message:"Password reset successfully"})
     } catch (error) {
-        return Response.json({ error: 'error in reset password' }, { status: 500 });
+        return NextResponse.json({ error: 'error in reset password' }, { status: 500 });
     }
 }
