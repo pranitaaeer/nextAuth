@@ -14,6 +14,6 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ user }, { status: 200 });
   }catch (error) {
 
-    return Response.json({ error: 'Invalid request body' }, { status: 400 });
+    return Response.json({ error: 'error in fetching userInfo' }, { status: 500 });
   } 
 }
