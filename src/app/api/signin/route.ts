@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
        
         //send email with verification code
         await sendEmail({ email: UserWithEmail!.email, emailType: "VERIFY", userId: UserWithEmail!._id.toString() })
-
+        return response
     } catch (err: any) {
         console.log("err in signin route", err)
         return NextResponse.json({ error: err.message }, { status: 500 })
