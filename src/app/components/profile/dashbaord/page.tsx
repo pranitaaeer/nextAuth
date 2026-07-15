@@ -1,6 +1,24 @@
 "use client";
 
+import { User } from "@/app/models/user";
+import { myInfo } from "@/app/services/api";
+import { useEffect, useState } from "react";
+
 export default function Dashboard() {
+  const [user,setUser]=useState<User>()
+
+  const getUser = async () => {
+    try {
+      const data = await myInfo();
+      setUser(data);
+      console.log("data:",data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+    useEffect(() => {
+    getUser();
+  }, []);
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 overflow-hidden relative">
 
@@ -21,7 +39,7 @@ export default function Dashboard() {
 
 
         <h1 className="mt-8 text-4xl font-bold text-white">
-          Welcome Back! 🎉
+          Welcome Back, {user?.username || "User"} 🎉
         </h1>
 
 
