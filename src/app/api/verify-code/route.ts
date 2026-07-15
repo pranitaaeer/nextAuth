@@ -7,12 +7,12 @@ await connectDB();
 
 export async function POST(request: NextRequest) {
   try {
-    const { token } = await request.json();
+    const { otp } = await request.json();
 
-    if (!token) {
+    if (!otp) {
       return NextResponse.json({ error: 'Token is required' }, { status: 400 });
     }
-    const user=await UserModel.findOne({ verifyToken: token, verifyTokenExpiry: { $gt: Date.now() } });
+    const user=await UserModel.findOne({ verifyToken: otp, verifyTokenExpiry: { $gt: Date.now() } });
     if (!user) {
       return NextResponse.json({ error: 'Invalid or expired token' }, { status: 400 });
     }

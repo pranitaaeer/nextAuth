@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { loginUser } from "@/app/services/api";
 export default function LoginPage() {
 
   const [formData, setFormData] = useState({
@@ -17,7 +17,26 @@ export default function LoginPage() {
     });
   };
 
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    try {
+      const response = await loginUser(formData);
+
+      console.log(response);
+
+      alert("login successful");
+
+    } catch (error: any) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.error || "Something went wrong"
+      );
+
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
 
@@ -32,7 +51,7 @@ export default function LoginPage() {
         </p>
 
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
 
           {/* Username / Email */}
           <div>

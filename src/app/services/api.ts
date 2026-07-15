@@ -17,16 +17,16 @@ export const loginUser = async (data: {
   identifiers: string;
   password: string;
 }) => {
-  const response = await api.post("/login", data);
+  const response = await api.post("/signin", data);
   return response.data;
 };
 
 
 // Verify Email
 export const verifyEmail = async (data: {
-  token: string;
+  otp: string;
 }) => {
-  const response = await api.post("/verify-email", data);
+  const response = await api.post("/verify-code", data);
   return response.data;
 };
 

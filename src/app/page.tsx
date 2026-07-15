@@ -11,7 +11,7 @@ export default function page() {
   return (
     <div>
       {/* <SignupPage /> */}
-      <LoginPage />
+      {/* <LoginPage /> */}
       {/* <ForgotPassword/> */}
       {/* <ResetPassword /> */}
       {/* <VerifyEmail /> */}

@@ -1,67 +1,135 @@
-import connectDB from '@/app/lib/db'
-import UserModel from '@/app/models/user'
-import { NextRequest, NextResponse } from 'next/server'
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
-import { sendEmail } from '@/app/lib/mailer'
+import connectDB from "@/app/lib/db";
+import UserModel from "@/app/models/user";
+import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { sendEmail } from "@/app/lib/mailer";
 
-await connectDB()
+await connectDB();
 
 export async function POST(request: NextRequest) {
-    try {
+  try {
 
-        // get raw data from user
-        const { identifiers, password } = await request.json()
+    const { identifiers, password } = await request.json();
 
-        if (!identifiers || !password) {
-            return NextResponse.json({ error: "all fields are required" }, { status: 400 })
-        }
-
-        const VerifyCode = Math.floor(100000 + Math.random() * 900000).toString();
-       const VerifyCodeExpiry = new Date(Date.now() + 3600000);
-       
-        //  check user is already exist
-        const UserWithUsername = await UserModel.findOne({ username: identifiers, isVerified: true })
-        if (UserWithUsername) {
-            return
-        }
-
-        const UserWithEmail = await UserModel.findOne({ email: identifiers })
-        if (UserWithEmail && UserWithEmail.isVerified) {
-            return
-        } else {
-            UserWithEmail!.verifyToken = VerifyCode
-            UserWithEmail!.verifyTokenExpiry = VerifyCodeExpiry
-            await UserWithEmail!.save()
-        }
-
-        
-        //  compare password
-        const comparePassword = await bcrypt.compare(password, UserWithEmail!.password)
-        if (!comparePassword) {
-            return NextResponse.json({ error: "invalid credentials" }, { status: 404 })
-        }
-        
-        // assign token
-        const token = jwt.sign({ id: UserWithEmail!._id }, process.env.JWT_SECRET as string, { expiresIn: "7d" })
-
-        const response = NextResponse.json({ message: "login successful", token }, { status: 200 })
-        //save into coookies
-        response.cookies.set("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60,
-        })
-       
-        //send email with verification code
-        await sendEmail({ email: UserWithEmail!.email, emailType: "VERIFY", userId: UserWithEmail!._id.toString() })
-        return response
-    } catch (err: any) {
-        console.log("err in signin route", err)
-        return NextResponse.json({ error: err.message }, { status: 500 })
+    if (!identifiers || !password) {
+      return NextResponse.json(
+        { error: "all fields are required" },
+        { status: 400 }
+      );
     }
 
 
+    // Find user by username or email
+    const user = await UserModel.findOne({
+      $or: [
+        { username: identifiers },
+        { email: identifiers }
+      ]
+    });
 
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "User not found" },
+        { status: 404 }
+      );
+    }
+
+
+    // Compare password first
+    const comparePassword = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+
+    if (!comparePassword) {
+      return NextResponse.json(
+        { error: "invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+
+    // If user is not verified, send verification code
+    if (!user.isVerified) {
+
+      const VerifyCode = Math.floor(
+        100000 + Math.random() * 900000
+      ).toString();
+
+      const VerifyCodeExpiry = new Date(
+        Date.now() + 3600000
+      );
+
+
+      user.verifyToken = VerifyCode;
+      user.verifyTokenExpiry = VerifyCodeExpiry;
+
+      await user.save();
+
+
+      await sendEmail({
+        email: user.email,
+        emailType: "VERIFY",
+        userId: user._id.toString(),
+        otp:VerifyCode
+      });
+
+
+      return NextResponse.json(
+        {
+          error: "Email not verified. Verification code sent."
+        },
+        { status: 403 }
+      );
+    }
+
+
+    // Create JWT token
+    const token = jwt.sign(
+      { id: user._id },
+      process.env.JWT_SECRET as string,
+      {
+        expiresIn: "7d"
+      }
+    );
+
+
+    const response = NextResponse.json(
+      {
+        message: "login successful",
+        token
+      },
+      {
+        status: 200
+      }
+    );
+
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60,
+    });
+
+
+    return response;
+
+
+  } catch (err: any) {
+
+    console.log("err in signin route", err);
+
+    return NextResponse.json(
+      {
+        error: err.message
+      },
+      {
+        status: 500
+      }
+    );
+  }
 }

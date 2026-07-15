@@ -1,11 +1,32 @@
 "use client";
 
 import { useState } from "react";
+import { verifyEmail } from "@/app/services/api";
 
 export default function VerifyEmail() {
 
-  const [token, setToken] = useState("");
+  const [otp, setOtp] = useState("");
 
+  const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
+  
+      try {
+        const response = await verifyEmail({otp});
+  
+        console.log(response);
+  
+        alert("user verified successful");
+  
+      } catch (error: any) {
+  
+        console.log(error);
+  
+        alert(
+          error.response?.data?.error || "Something went wrong"
+        );
+  
+      }
+    };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -21,7 +42,7 @@ export default function VerifyEmail() {
         </p>
 
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
 
           {/* Verification Code */}
           <div>
@@ -31,8 +52,8 @@ export default function VerifyEmail() {
 
             <input
               type="text"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               placeholder="Enter 6 digit code"
               maxLength={6}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none text-center tracking-widest text-lg focus:ring-2 focus:ring-blue-500"
