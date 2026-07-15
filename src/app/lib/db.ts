@@ -11,8 +11,8 @@ const connectDB = async () => {
             console.log("MongoDB is already connected")
             return;
         }
-        const db = await mongoose.connect(process.env.MONGO_URI as string);
-        console.log("db", db)
+        console.log("mongodbUrl:", process.env.MONGODB_URL|| "nothing...")
+        const db = await mongoose.connect(process.env.MONGODB_URL as string || "");
         connection.connected = db.connection.readyState;
         console.log(`MongoDB connected to ${db.connection.host}`)
 

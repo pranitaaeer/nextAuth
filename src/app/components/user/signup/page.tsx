@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-
+import { signupUser } from "@/app/services/api";
 export default function SignupPage() {
   const [formData, setFormData] = useState({
     username: "",
@@ -15,7 +15,26 @@ export default function SignupPage() {
       [e.target.name]: e.target.value,
     });
   };
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    try {
+      const response = await signupUser(formData);
+
+      console.log(response);
+
+      alert("Signup successful");
+
+    } catch (error: any) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.error || "Something went wrong"
+      );
+
+    }
+  };
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
@@ -28,7 +47,7 @@ export default function SignupPage() {
           Sign up to get started
         </p>
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleSubmit}>
 
           {/* Username */}
           <div>
