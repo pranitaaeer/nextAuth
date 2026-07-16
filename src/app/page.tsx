@@ -10,11 +10,7 @@ import Dashboard from './components/profile/dashbaord/page'
 export default function page() {
   return (
     <div>
-      {/* <SignupPage /> */}
-      {/* <LoginPage /> */}
-      {/* <ForgotPassword/> */}
-      {/* <ResetPassword /> */}
-      {/* <VerifyEmail /> */}
+      
       <Dashboard />
     </div>
   )
