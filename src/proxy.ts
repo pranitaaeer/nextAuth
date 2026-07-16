@@ -1,26 +1,51 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
-// This function can be marked `async` if using `await` inside
+
 export function proxy(request: NextRequest) {
-    const path = request.nextUrl.pathname // apth nikalo
 
-    const isPublicPath = path === '/login' || path === '/signup' || path === '/verifyemail'
+    const path = request.nextUrl.pathname;
 
-    const token = request.cookies.get('token')?.value || ''
 
+    const isPublicPath =
+        path === "/signin" ||
+        path === "/signup" ||
+        path === "/verifyemail" ||
+        path === "/forgot-password" ||
+        path === "/reset-password";
+
+
+    const token = request.cookies.get("token")?.value;
+
+
+    // user logged in hai aur login/signup pages open kar raha hai
     if (isPublicPath && token) {
-         //agar user public path pai hai aur token bhi hai toh apko kyu hi jana hai fhirse vha
-        return NextResponse.redirect(new URL('/', request.nextUrl))
+        return NextResponse.redirect(
+            new URL("/", request.url)
+        );
     }
 
+
+    // user logged in nahi hai aur protected route open kar raha hai
     if (!isPublicPath && !token) {
-         //agar apke pass token nahi hai aur ap private path pai ja rhe ho toh apko login page pai redirect karna chahiye
-        return NextResponse.redirect(new URL('/login', request.nextUrl))
+        return NextResponse.redirect(
+            new URL("/signin", request.url)
+        );
     }
 
+
+    return NextResponse.next();
 }
+
+
 
 export const config = {
-    matcher: ['/signin', '/signup', '/verify-code', '/reset-pass', '/forget-pass','/me'],
-}
+    matcher: [
+        "/signin",
+        "/signup",
+        "/verifyemail",
+        "/forgot-password",
+        "/reset-password",
+        "/",
+    ],
+};

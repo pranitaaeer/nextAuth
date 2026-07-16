@@ -26,10 +26,9 @@ export const loginUser = async (data: {
 export const verifyEmail = async (data: {
   otp: string;
 }) => {
-  const response = await api.post("/verify-code", data);
+  const response = await api.post("/verifyemail", data);
   return response.data;
 };
-
 
 // Forgot Password
 export const forgotPassword = async (data: {

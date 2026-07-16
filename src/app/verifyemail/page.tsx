@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { verifyEmail } from "@/app/services/api";
-
+import { useRouter } from "next/navigation";
 export default function VerifyEmail() {
 
   const [otp, setOtp] = useState("");
-
+const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
   
@@ -16,7 +16,7 @@ export default function VerifyEmail() {
         console.log(response);
   
         alert("user verified successful");
-  
+  router.push("/signin");
       } catch (error: any) {
   
         console.log(error);

@@ -1,11 +1,20 @@
 "use client";
 
 import { useState } from "react";
-
+import { forgotPassword } from "@/app/services/api";
 export default function ForgotPassword() {
 
   const [email, setEmail] = useState("");
 
+  const handleforgetPass=async()=>{
+    try {
+      const response=await forgotPassword({email})
+      console.log(response)
+      //user ko redirect krenge reset password page pai
+    } catch (error) {
+      console.log(error)
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
 
@@ -20,7 +29,7 @@ export default function ForgotPassword() {
         </p>
 
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleforgetPass}>
 
           {/* Email */}
           <div>

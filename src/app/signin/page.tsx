@@ -1,13 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { signupUser } from "@/app/services/api";
-export default function SignupPage() {
+import { loginUser } from "@/app/services/api";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+export default function LoginPage() {
+
   const [formData, setFormData] = useState({
-    username: "",
-    email: "",
+    identifiers: "",
     password: "",
   });
+const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -15,69 +18,71 @@ export default function SignupPage() {
       [e.target.name]: e.target.value,
     });
   };
+
 const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await signupUser(formData);
+  try {
 
-      console.log(response);
+    const response = await loginUser(formData);
 
-      alert("Signup successful");
+    console.log(response);
 
-    } catch (error: any) {
+    alert("Login successful");
 
-      console.log(error);
+    router.push("/");
 
-      alert(
-        error.response?.data?.error || "Something went wrong"
-      );
 
+  } catch (error: any) {
+
+    console.log(error);
+
+
+    // User email verified nahi hai
+    if (error.response?.status === 403) {
+
+      alert("Please verify your email first");
+
+      router.push("/verify-email");
+
+      return;
     }
-  };
+
+
+    alert(
+      error.response?.data?.error || "Something went wrong"
+    );
+
+  }
+};
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+
       <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-        
+
         <h1 className="text-3xl font-bold text-center text-gray-800 mb-2">
-          Create Account
+          Welcome Back
         </h1>
 
         <p className="text-center text-gray-500 mb-8">
-          Sign up to get started
+          Login to your account
         </p>
+
 
         <form className="space-y-5" onSubmit={handleSubmit}>
 
-          {/* Username */}
+          {/* Username / Email */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Username
+              Username or Email
             </label>
 
             <input
               type="text"
-              name="username"
-              value={formData.username}
+              name="identifiers"
+              value={formData.identifiers}
               onChange={handleChange}
-              placeholder="Enter username"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-
-          {/* Email */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              placeholder="Enter email"
+              placeholder="Enter username or email"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -100,25 +105,38 @@ const handleSubmit = async (e: React.FormEvent) => {
           </div>
 
 
-          {/* Button */}
+          {/* Forgot Password */}
+          <div className="flex justify-end">
+            <span className="text-sm text-blue-600 cursor-pointer hover:underline">
+              Forgot password?
+            </span>
+          </div>
+
+
+          {/* Login Button */}
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
           >
-            Sign Up
+            Login
           </button>
+
 
         </form>
 
 
         <p className="text-center text-sm text-gray-500 mt-6">
-          Already have an account?{" "}
+          Don't have an account?{" "}
+         <Link href={"/signup"}>
           <span className="text-blue-600 cursor-pointer hover:underline">
-            Login
+            Sign Up
           </span>
+         </Link>
         </p>
 
+
       </div>
+
     </div>
   );
 }
