@@ -34,7 +34,7 @@ export const verifyEmail = async (data: {
 export const forgotPassword = async (data: {
   email: string;
 }) => {
-  const response = await api.post("/forgot-password", data);
+  const response = await api.post("/forget-pass", data);
   return response.data;
 };
 
@@ -43,7 +43,7 @@ export const forgotPassword = async (data: {
 export const resetPassword = async (data: {
   Newpassword: string;
 }) => {
-  const response = await api.post("/reset-password", data);
+  const response = await api.post("/reset-pass", data);
   return response.data;
 };
 

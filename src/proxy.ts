@@ -11,19 +11,19 @@ export function proxy(request: NextRequest) {
         path === "/signin" ||
         path === "/signup" ||
         path === "/verifyemail" ||
-        path === "/forgot-password" ||
-        path === "/reset-password";
+        path === "/forgot-pass" 
+        path === "/reset-pass";
 
 
     const token = request.cookies.get("token")?.value;
 
 
     // user logged in hai aur login/signup pages open kar raha hai
-    if (isPublicPath && token) {
-        return NextResponse.redirect(
-            new URL("/", request.url)
-        );
-    }
+    // if (isPublicPath && token) {
+    //     return NextResponse.redirect(
+    //         new URL("/", request.url)
+    //     );
+    // }
 
 
     // user logged in nahi hai aur protected route open kar raha hai
@@ -44,8 +44,8 @@ export const config = {
         "/signin",
         "/signup",
         "/verifyemail",
-        "/forgot-password",
-        "/reset-password",
+        "/forgot-pass",
+        "/reset-pass",
         "/",
     ],
 };

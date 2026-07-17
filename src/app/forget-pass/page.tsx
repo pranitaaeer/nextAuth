@@ -2,17 +2,28 @@
 
 import { useState } from "react";
 import { forgotPassword } from "@/app/services/api";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Button from "../components/ui/Button";
+
 export default function ForgotPassword() {
 
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter();
 
-  const handleforgetPass=async()=>{
+  const handleforgetPass = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true)
     try {
-      const response=await forgotPassword({email})
+      const response = await forgotPassword({ email })
       console.log(response)
       //user ko redirect krenge reset password page pai
+      router.push("/reset-pass");
     } catch (error) {
       console.log(error)
+    } finally {
+      setIsLoading(false)
     }
   }
   return (
@@ -42,27 +53,29 @@ export default function ForgotPassword() {
               placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
           </div>
 
 
           {/* Button */}
-          <button
+          <Button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            isLoading={isLoading}
           >
             Send Reset Link
-          </button>
+          </Button>
 
         </form>
 
 
         <p className="text-center text-sm text-gray-500 mt-6">
           Remember your password?{" "}
-          <span className="text-blue-600 cursor-pointer hover:underline">
-            Login
-          </span>
+          <Link href={"/signin"}>
+            <span className="text-blue-600 cursor-pointer hover:underline">
+              Login
+            </span>
+          </Link>
         </p>
 
 

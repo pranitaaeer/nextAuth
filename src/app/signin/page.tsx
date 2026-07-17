@@ -4,12 +4,15 @@ import { useState } from "react";
 import { loginUser } from "@/app/services/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Button from "../components/ui/Button";
 export default function LoginPage() {
 
   const [formData, setFormData] = useState({
     identifiers: "",
     password: "",
   });
+  const [isLoading, setIsLoading] = useState(false)
+
 const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +24,7 @@ const router = useRouter();
 
 const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
-
+  setIsLoading(true)
   try {
 
     const response = await loginUser(formData);
@@ -43,7 +46,7 @@ const handleSubmit = async (e: React.FormEvent) => {
 
       alert("Please verify your email first");
 
-      router.push("/verify-email");
+      router.push("/verifyemail");
 
       return;
     }
@@ -53,6 +56,8 @@ const handleSubmit = async (e: React.FormEvent) => {
       error.response?.data?.error || "Something went wrong"
     );
 
+  }finally{
+    setIsLoading(false)
   }
 };
   return (
@@ -107,19 +112,21 @@ const handleSubmit = async (e: React.FormEvent) => {
 
           {/* Forgot Password */}
           <div className="flex justify-end">
+           <Link href={"/forget-pass"}>
             <span className="text-sm text-blue-600 cursor-pointer hover:underline">
               Forgot password?
             </span>
+           </Link>
           </div>
 
 
           {/* Login Button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
-          >
-            Login
-          </button>
+           <Button
+                      type="submit"
+                      isLoading={isLoading}
+                    >
+                      Login
+                    </Button>
 
 
         </form>

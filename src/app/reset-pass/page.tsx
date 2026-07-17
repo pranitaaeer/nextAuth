@@ -1,6 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import { resetPassword } from "../services/api";
+import { useRouter } from "next/navigation";
+import Button from "../components/ui/Button";
 
 export default function ResetPassword() {
 
@@ -8,6 +11,9 @@ export default function ResetPassword() {
     Newpassword: "",
     confirmPassword: "",
   });
+  const [isLoading, setIsLoading] = useState(false)
+
+  const router = useRouter();
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,7 +23,24 @@ export default function ResetPassword() {
     });
   };
 
-
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+  setIsLoading(true)
+    try {
+      if (formData.Newpassword !== formData.confirmPassword) {
+        alert("Passwords do not match");
+        return;
+      }
+      const response = await resetPassword({ Newpassword: formData.Newpassword })
+      console.log(response)
+      //user ko redirect krenge signin page pai
+      router.push("/signin");
+    } catch (error) {
+      console.log(error)
+    }finally{
+      setIsLoading(false)
+    }
+  }
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
 
@@ -32,7 +55,7 @@ export default function ResetPassword() {
         </p>
 
 
-        <form className="space-y-5">
+        <form className="space-y-5" onSubmit={handleResetPassword}>
 
           {/* New Password */}
           <div>
@@ -46,7 +69,7 @@ export default function ResetPassword() {
               value={formData.Newpassword}
               onChange={handleChange}
               placeholder="Enter new password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
           </div>
 
@@ -63,19 +86,18 @@ export default function ResetPassword() {
               value={formData.confirmPassword}
               onChange={handleChange}
               placeholder="Confirm new password"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500 text-black"
             />
           </div>
 
 
           {/* Button */}
-          <button
+          <Button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            isLoading={isLoading}
           >
             Reset Password
-          </button>
-
+          </Button>
 
         </form>
 

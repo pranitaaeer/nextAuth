@@ -38,16 +38,16 @@ export  async function POST(request: NextRequest) {
 
         await newUser.save()
 
-        // const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET as string, { expiresIn: "7d" })
+        const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET as string, { expiresIn: "7d" })
 
         const response = NextResponse.json({ message: "signup successful"}, { status: 201 })
 
-        // response.cookies.set("token", token, {
-        //     httpOnly: true,
-        //     secure: process.env.NODE_ENV === "production",
-        //     sameSite: "strict",
-        //     maxAge: 7 * 24 * 60 * 60,
-        // })
+        response.cookies.set("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60,
+        })
       return response
     } catch (err: any) {
         console.log("err in signin route", err)

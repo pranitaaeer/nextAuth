@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signupUser } from "@/app/services/api";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Button from "../components/ui/Button";
 
 export default function SignupPage() {
     const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@ export default function SignupPage() {
         email: "",
         password: "",
     });
+    const [isLoading, setIsLoading] = useState(false)
+
     const router = useRouter();
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,7 +24,7 @@ export default function SignupPage() {
     };
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        setIsLoading(true)
         try {
             const response = await signupUser(formData);
 
@@ -37,6 +40,8 @@ export default function SignupPage() {
                 error.response?.data?.error || "Something went wrong"
             );
 
+        } finally {
+            setIsLoading(false)
         }
     };
     return (
@@ -105,12 +110,12 @@ export default function SignupPage() {
 
 
                     {/* Button */}
-                    <button
+                    <Button
                         type="submit"
-                        className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+                        isLoading={isLoading}
                     >
-                        Sign Up
-                    </button>
+                        Sign up
+                    </Button>
 
                 </form>
 

@@ -3,30 +3,35 @@
 import { useState } from "react";
 import { verifyEmail } from "@/app/services/api";
 import { useRouter } from "next/navigation";
+import Button from "../components/ui/Button";
 export default function VerifyEmail() {
 
   const [otp, setOtp] = useState("");
-const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false)
+
+  const router = useRouter();
   const handleSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-  
-      try {
-        const response = await verifyEmail({otp});
-  
-        console.log(response);
-  
-        alert("user verified successful");
-  router.push("/signin");
-      } catch (error: any) {
-  
-        console.log(error);
-  
-        alert(
-          error.response?.data?.error || "Something went wrong"
-        );
-  
-      }
-    };
+    e.preventDefault();
+    setIsLoading(true)
+    try {
+      const response = await verifyEmail({ otp });
+
+      console.log(response);
+
+      alert("user verified successful");
+      router.push("/signin");
+    } catch (error: any) {
+
+      console.log(error);
+
+      alert(
+        error.response?.data?.error || "Something went wrong"
+      );
+
+    } finally {
+      setIsLoading(false)
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
@@ -63,12 +68,12 @@ const router = useRouter();
 
 
           {/* Button */}
-          <button
+          <Button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition"
+            isLoading={isLoading}
           >
             Verify Email
-          </button>
+          </Button>
 
 
         </form>
